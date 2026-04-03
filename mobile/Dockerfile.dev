@@ -1,0 +1,52 @@
+FROM node:22-alpine
+
+# Proxy build args (works with or without proxy)
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+
+ENV HTTP_PROXY=${HTTP_PROXY} \
+    HTTPS_PROXY=${HTTPS_PROXY} \
+    NO_PROXY=${NO_PROXY} \
+    http_proxy=${http_proxy} \
+    https_proxy=${https_proxy} \
+    no_proxy=${no_proxy}
+
+WORKDIR /app
+
+# Use HTTP repos to avoid proxy TLS issues
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.21/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.21/community" >> /etc/apk/repositories
+
+# Expo needs git for some operations
+RUN apk add --no-cache git
+
+# Configure npm for proxy if present
+RUN if [ -n "$HTTP_PROXY" ]; then \
+        npm config set proxy $HTTP_PROXY && \
+        npm config set https-proxy $HTTPS_PROXY && \
+        npm config set strict-ssl false; \
+    fi
+
+# Copy shared types
+COPY shared /shared
+
+# Copy package files and install dependencies
+COPY mobile/package.json ./
+RUN if [ -n "$HTTP_PROXY" ]; then \
+        NODE_TLS_REJECT_UNAUTHORIZED=0 npm install; \
+    else \
+        npm install; \
+    fi
+
+# Copy source (overridden by volume mount in dev)
+COPY mobile/ ./
+
+EXPOSE 8081
+
+# Generate Tailwind CSS then start Expo dev server
+ENTRYPOINT ["sh", "./web-entrypoint.sh"]
+CMD ["npx", "expo", "start", "--web", "--host", "lan", "--port", "8081", "--clear"]

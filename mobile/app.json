@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Konsuldoc",
+    "slug": "konsuldoc",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "konsuldoc",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.konsuldoc.app",
+      "config": {
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0d9488"
+      },
+      "package": "com.konsuldoc.app",
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}

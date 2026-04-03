@@ -1,0 +1,9 @@
+{
+  "name": "konsuldoc",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "server",
+    "mobile"
+  ]
+}
